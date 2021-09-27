@@ -1,28 +1,32 @@
 package com.example.demo.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class StudentService {
+public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
     public List<Student> getStudents() {
         return studentRepository.findAll();
+    }
+
+    @Override
+    public Student saveStudent(Student student) {
+
+        return studentRepository.findStudentByEmail(student.getEmail())
+                .orElseGet(() -> studentRepository.save(student));
     }
 
     public void addNewStudent(Student student){
@@ -33,6 +37,7 @@ public class StudentService {
         }
         studentRepository.save(student);
     }
+
     public void deleteStudent(Long studentId){
 
         boolean exists = studentRepository.existsById(studentId);
